@@ -102,7 +102,6 @@
         "vmSize": "Standard_A2",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('targetVMNetworkName'))]",
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('targetVMNetworkSubnetName'))]",
-        "networkSecurityGroupName": "[replace(replace(tolower(concat('nsg',resourceGroup().name)), '-', ''), '.','')]",
         "availabilitySetName": "LoadgenAvailabilitySet",
         "consoleJoinDomainTemplate": "[concat(variables('assetLocation'),'/joindomain.json')]",
         "assetLocation": "https://raw.githubusercontent.com/vikasnav/AzureStack-QuickStart-Templates/master/vs2013-tcta",
@@ -110,37 +109,12 @@
         "webLblb_PIP_Id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('dnsNameForPublicIP'))]",
         "webLbId": "[resourceId('Microsoft.Network/loadBalancers',variables('webLbName'))]",
         "frontEndIPConfigID": "[concat(variables('webLbId'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
-        "lbPoolID": "[concat(variables('webLbId'),'/backendAddressPools/BackendPool1')]",
-        "lbProbeID": "[concat(variables('webLbId'),'/probes/tcpProbe')]"
+        "backendPoolName": "loadgenBackendPool",
+        "lbPoolID": "[concat(variables('webLbId'),'/backendAddressPools/',variables('backendPoolName'))]",
+        "lbProbeID": "[concat(variables('webLbId'),'/probes/loadgentcpProbe')]"
     },
 
     "resources": [
-        {
-            "apiVersion": "2015-05-01-preview",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "name": "[variables('networkSecurityGroupName')]",
-            "location": "[variables('location')]",
-            "tags": {
-                "displayName": "NetworkSecurityGroup"
-            },
-            "properties": {
-                "securityRules": [
-                {
-                    "name": "rule1",
-                    "properties": {
-                        "protocol": "*",
-                        "sourcePortRange": "*",
-                        "destinationPortRange": "*",
-                        "sourceAddressPrefix": "*",
-                        "destinationAddressPrefix": "*",
-                        "access": "Allow",
-                        "priority": 101,
-                        "direction": "Inbound"
-                    }
-                }
-                ]
-            }
-        },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[toLower(parameters('newStorageAccountName'))]",
@@ -150,25 +124,25 @@
                 "accountType": "[variables('storageAccountType')]"
             }
         },
-{
-      "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('availabilitySetName')]",
-      "apiVersion": "2015-06-15",
-      "location": "[resourceGroup().location]",
-      "properties": { }
-    },
-    {
-      "name": "[variables('dnsNameForPublicIP')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2015-06-15",
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic",
-        "idleTimeoutInMinutes": 4,
-        "dnsSettings": {
-          "domainNameLabel": "[variables('dnsNameForPublicIP')]"
-        }
-      }
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('availabilitySetName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": { }
+        },
+        {
+            "name": "[variables('dnsNameForPublicIP')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                "domainNameLabel": "[variables('dnsNameForPublicIP')]"
+                }
+            }
     },        
     {
       "apiVersion": "2015-06-15",
@@ -194,7 +168,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "BackendPool1"
+            "name": "[variables('backendPoolName')]"
           }
         ],
         "inboundNatRules": [
@@ -280,7 +254,7 @@
                             },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[concat(variables('webLbId'), '/backendAddressPools/BackendPool1')]"
+                  "id": "[variables('lbPoolID')]"
                 }
               ],
               "loadBalancerInboundNatRules": [
