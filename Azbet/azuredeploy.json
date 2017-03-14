@@ -488,14 +488,17 @@
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
                     },
-                    "numberOfWebSrvs": {
-                        "value": "[parameters('numberOfWebSrvs')]"
+                    "numberOfLoadgenSrvs": {
+                        "value": "[parameters('numberOfLoadgenSrvs')]"
                     },
                     "targetVMNetworkName": {
                         "value": "[variables('virtualNetworkName')]"
                     },
                     "targetVMNetworkSubnetName": {
                         "value": "[variables('staticSubnetName')]"
+                    },
+                    "vmName": {
+                        "value": "LoadgenVM"
                     }
                 }
             }
