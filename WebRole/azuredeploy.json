@@ -358,9 +358,6 @@
       "dependsOn": [
         "JoinDomainLoop"
       ],
-      "tags": {
-        "displayName": "VM Extensions"
-      },
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
@@ -368,9 +365,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "ModulesUrl": "[variables('modulesUrl')]",
-          "SasToken": "",
           "ConfigurationFunction": "[variables('configurationFunction')]",
-          "wmfVersion": "4.0",
           "Properties": {
           }
         },
