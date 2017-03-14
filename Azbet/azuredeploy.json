@@ -36,7 +36,29 @@
                 "description": "The password for the Administrator account of the new VMs and Domain"
             },            
             "defaultValue": "[concat('Subscription#',subscription().subscriptionId)]"
-        }
+        },
+        "numberOfWebSrvs": {
+        "type": "int",
+        "metadata": {
+            "description": "Number of Web Servers"
+        },
+        "allowedValues": [
+            1,
+            2
+        ],
+        "defaultValue": 2
+        },
+        "numberOfLoadgenSrvs": {
+            "type": "int",
+            "metadata": {
+                "description": "Number of Web Servers"
+            },
+            "allowedValues": [
+                1,
+                2
+            ],
+            "defaultValue": 2
+            }                 
     },
     "variables": {
         "sqlassetLocation": "https://raw.githubusercontent.com/vikasnav/AzureStack-QuickStart-Templates/master/sql-2014-non-ha",
@@ -97,7 +119,7 @@
             }
         ],
         "deployWebroleTemplateURL": "https://raw.githubusercontent.com/vikasnav/azurestack-quickstart-templates/master/WebRole/azuredeploy.json",
-        "deployLoadgenroleTemplateURL": "https://raw.githubusercontent.com/vikasnav/azurestack-quickstart-templates/master/Multple-Windows-VM/azuredeploy.json"
+        "deployLoadgenroleTemplateURL": "https://raw.githubusercontent.com/vikasnav/azurestack-quickstart-templates/master/Multiple-Windows-VM/azuredeploy.json"
     },
     "resources": [
         {
@@ -397,11 +419,11 @@
             }
         },
         {
-            "name": "[variables('deployWebrole')]",
+            "name": "DeployWebrole",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "[variables('deploySqlStandalone')]",
+                "[variables('deploySqlStandalone')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -410,42 +432,39 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "sqlVMName": {
-                        "value": "[variables('sqlClusterVmName')]"
-                    },
                     "domainName": {
                         "value": "[parameters('domainName')]"
-                    },
-                    "sqlInstallationISOUri": {
-                        "value": "[parameters('sqlInstallationISOUri')]"
-                    },
-                    "sqlServerServiceAccountUserName": {
-                        "value": "[parameters('sqlServerServiceAccountUserName')]"
-                    },
-                    "sqlServerServiceAccountPassword": {
-                        "value": "[variables('sqlServerServiceAccountPassword')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
                     },
-                    "primaryAdIpAddress": {
-                        "value": "[variables('primaryIpADAddress')]"
-                    },
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
                     },
-                    "assetLocation": {
-                        "value": "[variables('sqlassetLocation')]"
-                    }
+                    "username": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "password": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "numberOfWebSrvs": {
+                        "value": "[parameters('numberOfWebSrvs')]"
+                    },
+                    "targetVMNetworkName": {
+                        "value": "[variables('virtualNetworkName')]"
+                    },
+                    "targetVMNetworkSubnetName": {
+                        "value": "[variables('staticSubnetName')]"
+                    }    
                 }
             }
         },
         {
-            "name": "[variables('deployLoadgenrole')]",
+            "name": "DeployLoadgenrole",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "[variables('deploySqlStandalone')]",
+                "[variables('deploySqlStandalone')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -454,32 +473,29 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "sqlVMName": {
-                        "value": "[variables('sqlClusterVmName')]"
-                    },
                     "domainName": {
                         "value": "[parameters('domainName')]"
                     },
-                    "sqlInstallationISOUri": {
-                        "value": "[parameters('sqlInstallationISOUri')]"
+                    "domainAdminUsername": {
+                        "value": "[parameters('adminUsername')]"
                     },
-                    "sqlServerServiceAccountUserName": {
-                        "value": "[parameters('sqlServerServiceAccountUserName')]"
-                    },
-                    "sqlServerServiceAccountPassword": {
-                        "value": "[variables('sqlServerServiceAccountPassword')]"
+                    "domainAdminPassword": {
+                        "value": "[parameters('adminPassword')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
                     },
-                    "primaryAdIpAddress": {
-                        "value": "[variables('primaryIpADAddress')]"
-                    },
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
                     },
-                    "assetLocation": {
-                        "value": "[variables('sqlassetLocation')]"
+                    "numberOfWebSrvs": {
+                        "value": "[parameters('numberOfWebSrvs')]"
+                    },
+                    "targetVMNetworkName": {
+                        "value": "[variables('virtualNetworkName')]"
+                    },
+                    "targetVMNetworkSubnetName": {
+                        "value": "[variables('staticSubnetName')]"
                     }
                 }
             }
