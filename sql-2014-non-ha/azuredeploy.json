@@ -39,8 +39,8 @@
         }
     },
     "variables": {
-        "sqlassetLocation": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/master/sql-2014-non-ha",
-        "adAssetLocation": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/master/ad-non-ha",
+        "sqlassetLocation": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/vikasnav/sql-2014-non-ha",
+        "adAssetLocation": "https://raw.githubusercontent.com/Azure/AzureStack-QuickStart-Templates/vikasnav/ad-non-ha",
         "location": "[resourceGroup().location]",
         "sqlServerServiceAccountPassword": "[parameters('adminPassword')]",
         "vmNetworkSubnet": "10.0.0.0/24",
@@ -102,7 +102,7 @@
             "name": "[variables('nsgName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "location": "[variables('location')]",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2015-06-15",
             "properties": {
                 "securityRules": [
                     {
@@ -125,7 +125,7 @@
             "name": "[variables('virtualNetworkName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "[variables('location')]",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2015-06-15",
             "dependsOn": [
                 "[variables('nsgID')]"
             ],
@@ -152,7 +152,7 @@
             "name": "[variables('publicIPAddressName')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "location": "[variables('location')]",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2015-06-15",
             "dependsOn": [
                 "[variables('vnetID')]"
             ],
@@ -166,7 +166,7 @@
         {
             "name": "[variables('publiclbName')]",
             "type": "Microsoft.Network/loadBalancers",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2015-06-15",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[variables('publicIPAddressID')]"
