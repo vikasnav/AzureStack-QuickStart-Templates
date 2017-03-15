@@ -220,7 +220,7 @@
         ],
         "probes": [
           {
-            "name": "tcpProbe",
+            "name": "loadgentcpProbe",
             "properties": {
               "protocol": "tcp",
               "port": 80,
