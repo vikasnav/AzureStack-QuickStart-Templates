@@ -109,6 +109,8 @@
         "webLblb_PIP_Id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('dnsNameForPublicIP'))]",
         "webLbId": "[resourceId('Microsoft.Network/loadBalancers',variables('webLbName'))]",
         "frontEndIPConfigID": "[concat(variables('webLbId'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
+        "lbProbeID1": "[concat(variables('webLbId'),'/probes/LGtcpProbe1')]",
+        "lbProbeID2": "[concat(variables('webLbId'),'/probes/LGtcpProbe2')]",
         "backendPoolName": "loadgenBackendPool",
         "lbPoolID": "[concat(variables('webLbId'),'/backendAddressPools/',variables('backendPoolName'))]",
         "lbProbeID": "[concat(variables('webLbId'),'/probes/loadgentcpProbe')]"
@@ -199,7 +201,7 @@
         ],
         "loadBalancingRules": [
           {
-            "name": "LBRule",
+            "name": "LBRule1",
             "properties": {
               "frontendIPConfiguration": {
                 "id": "[variables('frontEndIPConfigID')]"
@@ -213,17 +215,45 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
               "probe": {
-                "id": "[variables('lbProbeID')]"
+                "id": "[variables('lbProbeID1')]"
               }
             }
-          }
+          },
+          {
+            "name": "LBRule2",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[variables('lbProbeID2')]"
+              }
+            }
+          }          
         ],
         "probes": [
           {
-            "name": "loadgentcpProbe",
+            "name": "LGtcpProbe1",
             "properties": {
               "protocol": "tcp",
               "port": 80,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          },
+          {
+            "name": "LGtcpProbe2",
+            "properties": {
+              "protocol": "tcp",
+              "port": 443,
               "intervalInSeconds": 5,
               "numberOfProbes": 2
             }
@@ -252,16 +282,16 @@
                             "subnet": {
                                 "id": "[variables('subnetRef')]"
                             },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[variables('lbPoolID')]"
-                }
-              ],
-              "loadBalancerInboundNatRules": [
-                {
-                  "id": "[concat(variables('webLbId'),'/inboundNatRules/RDP-VM', copyindex())]"
-                }
-              ]
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                "id": "[variables('lbPoolID')]"
+                                }
+                            ],
+                            "loadBalancerInboundNatRules": [
+                                {
+                                "id": "[concat(variables('webLbId'),'/inboundNatRules/RDP-VM', copyindex())]"
+                                }
+                            ]
                         }
                     }
                 ]
@@ -278,9 +308,13 @@
             },            
             "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('newStorageAccountName'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
                 "nicLoop"
             ],
             "properties": {
+                "availabilitySet": {
+                "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
+                },                
                 "hardwareProfile": {
                     "vmSize": "[variables('vmSize')]"
                 },
