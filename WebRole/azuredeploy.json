@@ -91,7 +91,8 @@
     "webLblb_PIP_Id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('webSrvPublicIP'))]",
     "webLbId": "[resourceId('Microsoft.Network/loadBalancers',variables('webLbName'))]",
     "frontEndIPConfigID": "[concat(variables('webLbId'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
-    "lbPoolID": "[concat(variables('webLbId'),'/backendAddressPools/WebBackendPool1')]",
+    "poolName" : "WebBackendPool1",
+    "lbPoolID": "[concat(variables('webLbId'),'/backendAddressPools/',variables('poolName'))]",
     "lbProbeID1": "[concat(variables('webLbId'),'/probes/webtcpProbe1')]",
     "lbProbeID2": "[concat(variables('webLbId'),'/probes/webtcpProbe2')]",
     "vmExtensionName": "dscExtension",
@@ -165,7 +166,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "WebBackendPool1"
+            "name": "[variables('poolName')]"
           }
         ],
         "inboundNatRules": [
@@ -282,7 +283,7 @@
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[concat(variables('webLbId'), '/backendAddressPools/BackendPool1')]"
+                  "id":  "[variables('lbPoolID')]"
                 }
               ],
               "loadBalancerInboundNatRules": [
